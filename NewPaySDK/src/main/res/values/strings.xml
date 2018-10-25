@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">newpaySDK</string>
+    <string name="no_newpay_application">没有NewPay应用程序，请下载安装</string>
+</resources>
