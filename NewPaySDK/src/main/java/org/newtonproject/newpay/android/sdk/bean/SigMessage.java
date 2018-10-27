@@ -1,12 +1,5 @@
 package org.newtonproject.newpay.android.sdk.bean;
 
-/**
- * @author weixuefeng@lubangame.com
- * @version $Rev$
- * @time: 2018/10/27--10:34 AM
- * @description
- * @copyright (c) 2018 Newton Foundation. All rights reserved.
- */
 public class SigMessage {
 
     public String signS;
