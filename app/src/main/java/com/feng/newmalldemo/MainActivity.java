@@ -17,6 +17,7 @@ import com.google.gson.Gson;
 
 import org.newtonproject.newpay.android.sdk.NewPayApi;
 import org.newtonproject.newpay.android.sdk.bean.ProfileInfo;
+import org.newtonproject.newpay.android.sdk.bean.SigMessage;
 
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -63,10 +64,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == NewPayApi.REQUEST_CODE_NEWPAY && resultCode == RESULT_OK) {
-            String r = data.getStringExtra("data");
+            String profile = data.getStringExtra("profile");
+            String sigMessage = data.getStringExtra("signature");
             Log.e(TAG, "onActivityResult: " + data.toString() );
-            if(!TextUtils.isEmpty(r)){
-                ProfileInfo profileInfo = gson.fromJson(r, ProfileInfo.class);
+            if(!TextUtils.isEmpty(profile)){
+                ProfileInfo profileInfo = gson.fromJson(profile, ProfileInfo.class);
                 cellphoneTextView.setText(profileInfo.cellphone);
                 nameTextView.setText(profileInfo.name);
                 newidTextView.setText(profileInfo.newid);
@@ -77,7 +79,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Log.e(TAG, "onActivityResult: " + error);
                 Toast.makeText(this, error, Toast.LENGTH_LONG).show();
             }
-
+            if(!TextUtils.isEmpty(sigMessage)) {
+                SigMessage sig = gson.fromJson(sigMessage, SigMessage.class);
+                Log.e(TAG, "onActivityResult: " + sig.toString());
+            }
         }
         if(requestCode == NewPayApi.REQUEST_CODE_NEWPAY && resultCode == RESULT_CANCELED) {
             Toast.makeText(this, "user canceled", Toast.LENGTH_LONG).show();
