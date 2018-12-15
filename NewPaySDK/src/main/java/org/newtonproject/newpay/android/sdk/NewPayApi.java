@@ -6,13 +6,11 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
-import android.widget.Toast;
 
 import org.web3j.crypto.ECKeyPair;
 import org.web3j.crypto.Sign;
 import org.web3j.utils.Numeric;
 
-import java.lang.ref.WeakReference;
 import java.math.BigInteger;
 import java.util.List;
 import java.util.Random;
@@ -26,7 +24,8 @@ public class NewPayApi {
     public static final int REQUEST_CODE_NEWPAY = 3001;
     public static final int REQUEST_CODE_NEWPAY_PAY = 3002;
 
-    private static WeakReference<Activity> mCurrentActivity;
+    private static final String TESTNET_SHARE_URL = "https://developer.newtonproject.org/testnet/newpay/download";
+    private static final String RELEASE_SHARE_URL = "https://developer.newtonproject.org/release/newpay/download";
 
     private NewPayApi() {}
 
@@ -51,7 +50,8 @@ public class NewPayApi {
         if (isIntentSafe) {
             activity.startActivityForResult(intent, REQUEST_CODE_NEWPAY);
         } else{
-            Toast.makeText(activity, R.string.no_newpay_application, Toast.LENGTH_SHORT).show();
+            startDownloadUrl(activity);
+            //Toast.makeText(activity, R.string.no_newpay_application, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -69,13 +69,19 @@ public class NewPayApi {
         if (isIntentSafe) {
             activity.startActivityForResult(intent, REQUEST_CODE_NEWPAY_PAY);
         } else{
-            Toast.makeText(activity, R.string.no_newpay_application, Toast.LENGTH_SHORT).show();
+            startDownloadUrl(activity);
+            //Toast.makeText(activity, R.string.no_newpay_application, Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private static void startDownloadUrl(Activity activity) {
+        Uri uri = Uri.parse(RELEASE_SHARE_URL);
+        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+        activity.startActivity(intent);
     }
 
     private static String getMessage() {
         return System.currentTimeMillis() + new Random().nextInt(1000000) + "";
-
     }
 
     private static Sign.SignatureData getSignMessage(String message, String privateKey) {
