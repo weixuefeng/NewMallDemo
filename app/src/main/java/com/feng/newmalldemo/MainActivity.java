@@ -15,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.squareup.picasso.Picasso;
 
 import org.newtonproject.newpay.android.sdk.NewPayApi;
 import org.newtonproject.newpay.android.sdk.bean.ProfileInfo;
@@ -34,7 +35,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private static final int REQUEST_CODE_NEWPAY = 1000;
     private static final String privateKey = "0xbc6162af5677bc108fc227a1b1178aede933d05979cc5c6154078c2eae068dac";
-    private static final String publicKey = "0xa16b27213b5279d1f43c67e0e43272dad5a19376af3182fc24199d06d8f169402b2a4bc1d609d8af3186b929f42ffee0fba00cb569547fffa3c2769abe55ae7a";
+    private static final String publicKey = "0xe5f001b70a3911c1b6dcb857add080beab3ceff7278a012678dbb7e869c787cfd5739cf980adebd59a826eb78eb4d10e746a1fadb49f0245a87270d5a817cda0";
     Gson gson = new Gson();
     private Button request20Bt;
 
@@ -43,8 +44,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initView();
-        NewPayApi.init(getApplication(), privateKey, "1");
-
+        NewPayApi.init(getApplication(), privateKey, "9a674d65c945569a9071b31b07f3bc52");
     }
 
     private void initView() {
@@ -82,8 +82,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 cellphoneTextView.setText(profileInfo.cellphone);
                 nameTextView.setText(profileInfo.name);
                 newidTextView.setText(profileInfo.newid);
-                Uri avatarUri = data.getData();
-                imageView.setImageURI(avatarUri);
+                Picasso.get().load(profileInfo.avatarPath).into(imageView);
             }else{
                 String error = data.getStringExtra("error");
                 Log.e(TAG, "onActivityResult: " + error);

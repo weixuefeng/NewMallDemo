@@ -1,7 +1,9 @@
 package org.newtonproject.newpay.android.sdk;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Application;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -74,10 +76,27 @@ public class NewPayApi {
         }
     }
 
-    private static void startDownloadUrl(Activity activity) {
-        Uri uri = Uri.parse(RELEASE_SHARE_URL);
-        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-        activity.startActivity(intent);
+    private static void startDownloadUrl(final Activity activity) {
+        AlertDialog dialog = new AlertDialog.Builder(activity)
+                .setCancelable(true)
+                .setMessage(R.string.no_newpay_application)
+                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                })
+                .setPositiveButton(R.string.download_newpay, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        Uri uri = Uri.parse(RELEASE_SHARE_URL);
+                        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                        activity.startActivity(intent);
+                        dialogInterface.dismiss();
+                    }
+                }).create();
+        dialog.show();
+
     }
 
     private static String getMessage() {

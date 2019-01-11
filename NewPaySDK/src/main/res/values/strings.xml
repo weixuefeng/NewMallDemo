@@ -1,4 +1,6 @@
 <resources>
     <string name="app_name">newpaySDK</string>
-    <string name="no_newpay_application">没有NewPay应用程序，请下载安装</string>
+    <string name="cancel">Cancel</string>
+    <string name="download_newpay">Download NewPay</string>
+    <string name="no_newpay_application">No NewPay Application, Please download it by click next button.</string>
 </resources>
