@@ -52,3 +52,9 @@ if(requestCode == NewPayApi.REQUEST_CODE_NEWPAY && resultCode == RESULT_OK) {
         }
 ```
 
+# 5. request push order
+```
+  NewpayApi.requestPushOrder(Activity activity, ArrayList<Order> orders)
+
+```
+
