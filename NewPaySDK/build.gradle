@@ -46,5 +46,6 @@ dependencies {
     implementation files('libs/utils-3.3.1-android.jar')
     implementation 'com.madgag.spongycastle:core:1.58.0.0'
     implementation "com.madgag.spongycastle:prov:1.58.0.0"
+    implementation "com.google.code.gson:gson:2.8.2"
 
 }

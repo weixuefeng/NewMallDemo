@@ -9,11 +9,17 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 
+import com.google.gson.Gson;
+
+import org.newtonproject.newpay.android.sdk.bean.Action;
+import org.newtonproject.newpay.android.sdk.bean.Order;
+import org.newtonproject.newpay.android.sdk.bean.SigMessage;
 import org.web3j.crypto.ECKeyPair;
 import org.web3j.crypto.Sign;
 import org.web3j.utils.Numeric;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -22,12 +28,18 @@ public class NewPayApi {
     private static Application mApplication;
     private static String privateKey;
     private static String appId;
-
+    private static Gson gson;
     public static final int REQUEST_CODE_NEWPAY = 3001;
     public static final int REQUEST_CODE_NEWPAY_PAY = 3002;
+    public static final int REQUEST_CODE_PUSH_ORDER = 3003;
 
     private static final String TESTNET_SHARE_URL = "https://developer.newtonproject.org/testnet/newpay/download";
     private static final String RELEASE_SHARE_URL = "https://developer.newtonproject.org/release/newpay/download";
+
+    private static final String ACTION = "ACTION";
+    private static final String APPID = "APPID";
+    private static final String CONTENT = "CONTENT";
+    private static final String SIGNATURE = "SIGNATURE";
 
     private NewPayApi() {}
 
@@ -35,19 +47,15 @@ public class NewPayApi {
         mApplication = context;
         privateKey = appKey;
         appId = appid;
+        gson = new Gson();
     }
 
     public static void requestProfileFromNewPay(Activity activity) {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("newpay://org.newtonproject.newpay.android.authorize"));
-        String message = getMessage();
-        Sign.SignatureData sig = getSignMessage(message, privateKey);
-        intent.putExtra("message", message);
-        intent.putExtra("sign_r", Numeric.toHexString(sig.getR()));
-        intent.putExtra("sign_s", Numeric.toHexString(sig.getS()));
-        intent.putExtra("appId", appId);
-        PackageManager packageManager = mApplication.getPackageManager();
-        List<ResolveInfo> activities = packageManager.queryIntentActivities(intent, 0);
-        boolean isIntentSafe = activities.size() > 0;
+        intent.putExtra(ACTION, Action.REQUEST_PROFILE);
+        intent.putExtra(APPID, appId);
+        intent.putExtra(SIGNATURE, gson.toJson(getSigMessage(privateKey)));
+        boolean isIntentSafe = checkNewPay(intent);
         // Start an activity if it's safe
         if (isIntentSafe) {
             activity.startActivityForResult(intent, REQUEST_CODE_NEWPAY);
@@ -64,15 +72,27 @@ public class NewPayApi {
         intent.putExtra("ADDRESS", address);
         intent.putExtra("AMOUNT", account.toString(10));
         intent.putExtra("REQUEST_PAY_SOURCE", activity.getPackageName());
-        PackageManager packageManager = mApplication.getPackageManager();
-        List<ResolveInfo> activities = packageManager.queryIntentActivities(intent, 0);
-        boolean isIntentSafe = activities.size() > 0;
+        boolean isIntentSafe = checkNewPay(intent);
         // Start an activity if it's safe
         if (isIntentSafe) {
             activity.startActivityForResult(intent, REQUEST_CODE_NEWPAY_PAY);
         } else{
             startDownloadUrl(activity);
             //Toast.makeText(activity, R.string.no_newpay_application, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public static void requestPushOrder(Activity activity, ArrayList<Order> orders) {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("newpay://org.newtonproject.newpay.android.authorize"));
+        intent.putExtra(ACTION, Action.PUSH_ORDER);
+        intent.putExtra(APPID, appId);
+        intent.putExtra(SIGNATURE, gson.toJson(getSigMessage(privateKey)));
+        intent.putExtra(CONTENT, gson.toJson(orders));
+        boolean isIntentSafe = checkNewPay(intent);
+        if (isIntentSafe) {
+            activity.startActivityForResult(intent, REQUEST_CODE_PUSH_ORDER);
+        } else{
+            startDownloadUrl(activity);
         }
     }
 
@@ -99,11 +119,19 @@ public class NewPayApi {
 
     }
 
+    private static boolean checkNewPay(Intent intent) {
+        PackageManager packageManager = mApplication.getPackageManager();
+        List<ResolveInfo> activities = packageManager.queryIntentActivities(intent, 0);
+        return activities.size() > 0;
+    }
+
     private static String getMessage() {
         return System.currentTimeMillis() + new Random().nextInt(1000000) + "";
     }
 
-    private static Sign.SignatureData getSignMessage(String message, String privateKey) {
-        return Sign.signMessage(message.getBytes(), ECKeyPair.create(Numeric.toBigInt(privateKey)));
+    private static SigMessage getSigMessage(String privateKey) {
+        String message = getMessage();
+        Sign.SignatureData sig = Sign.signMessage(message.getBytes(), ECKeyPair.create(Numeric.toBigInt(privateKey)));
+        return new SigMessage(Numeric.toHexString(sig.getR()), Numeric.toHexString(sig.getS()), message);
     }
 }
