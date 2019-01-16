@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button request20Bt;
     private Button single;
     private Button multiple;
+    private ProfileInfo profileInfo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,24 +86,34 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void pushSingle() {
+        if(profileInfo == null) {
+            Toast.makeText(this, "Profile newid is null", Toast.LENGTH_SHORT).show();
+            return;
+        }
         ArrayList<Order> orders = new ArrayList<>();
         Order order = new Order();
         order.currency = Currency.CNY;
         order.orderNumber = "orderSingle";
         order.price = 10.2f;
         order.sellerNewid = "NEWID1ab6wnXrhpEbRtH44zrs3wcjqxmbeqU28Zpv64dzahfRvvJq6JRQ";
+        order.buyerNewid = profileInfo.newid;
         orders.add(order);
         NewPayApi.requestPushOrder(this, orders);
     }
 
     private void pushMultiple() {
         ArrayList<Order> datas = new ArrayList<>();
+        if(profileInfo == null) {
+            Toast.makeText(this, "Profile newid is null", Toast.LENGTH_SHORT).show();
+            return;
+        }
         for(int i = 0; i < 2; i++) {
             Order order = new Order();
             order.currency = Currency.CNY;
             order.orderNumber = "order" + i;
             order.price = 10.2f + i;
             order.sellerNewid = "NEWID1ab6wnXrhpEbRtH44zrs3wcjqxmbeqU28Zpv64dzahfRvvJq6JRQ";
+            order.buyerNewid = profileInfo.newid;
             datas.add(order);
         }
         NewPayApi.requestPushOrder(this, datas);
@@ -131,7 +142,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             String sigMessage = data.getStringExtra("signature");
 
             if(!TextUtils.isEmpty(profile)){
-                ProfileInfo profileInfo = gson.fromJson(profile, ProfileInfo.class);
+                profileInfo = gson.fromJson(profile, ProfileInfo.class);
                 cellphoneTextView.setText(profileInfo.cellphone);
                 nameTextView.setText(profileInfo.name);
                 newidTextView.setText(profileInfo.newid);

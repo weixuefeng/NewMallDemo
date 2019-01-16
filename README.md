@@ -2,7 +2,7 @@
 
 # 1.add gradle dependency on your app build.gradle
 ```
-implementation 'org.newtonproject.newpay.android.sdk:NewPaySDK:0.0.7'
+implementation 'org.newtonproject.newpay.android.sdk:NewPaySDK:0.0.9'
 ```
 # 2. init NewPayApi on application
 ```

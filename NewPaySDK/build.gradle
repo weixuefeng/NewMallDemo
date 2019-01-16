@@ -6,7 +6,7 @@ publish {
     userOrg = 'testfw'
     groupId = 'org.newtonproject.newpay.android.sdk'
     artifactId = 'NewPaySDK'
-    publishVersion = '0.0.8'
+    publishVersion = '0.0.9'
     desc = 'third application request profile from newpay'
     website = 'https://github.com/weixuefeng/NewMallDemo.git'
 }

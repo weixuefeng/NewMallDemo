@@ -5,4 +5,5 @@ public class Order {
     public float price;
     public String currency;
     public String sellerNewid;
+    public String buyerNewid;
 }
