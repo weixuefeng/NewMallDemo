@@ -60,7 +60,7 @@ public class NewPayApi {
         boolean isIntentSafe = checkNewPay(intent);
         // Start an activity if it's safe
         if (isIntentSafe) {
-            startActivityForResult(activity, intent, REQUEST_CODE_NEWPAY);
+            activity.startActivityForResult(intent, REQUEST_CODE_NEWPAY);
         } else{
             startDownloadUrl(activity);
             //Toast.makeText(activity, R.string.no_newpay_application, Toast.LENGTH_SHORT).show();
@@ -77,7 +77,7 @@ public class NewPayApi {
         boolean isIntentSafe = checkNewPay(intent);
         // Start an activity if it's safe
         if (isIntentSafe) {
-            startActivityForResult(activity, intent, REQUEST_CODE_NEWPAY_PAY);
+            activity.startActivityForResult(intent, REQUEST_CODE_NEWPAY_PAY);
         } else{
             startDownloadUrl(activity);
         }
@@ -91,7 +91,7 @@ public class NewPayApi {
         intent.putExtra(CONTENT, gson.toJson(orders));
         boolean isIntentSafe = checkNewPay(intent);
         if (isIntentSafe) {
-            startActivityForResult(activity, intent, REQUEST_CODE_PUSH_ORDER);
+            activity.startActivityForResult(intent, REQUEST_CODE_PUSH_ORDER);
         } else{
             startDownloadUrl(activity);
         }
@@ -105,7 +105,7 @@ public class NewPayApi {
         boolean isIntentSafe = checkNewPay(intent);
         // Start an activity if it's safe
         if (isIntentSafe) {
-            startActivityForResult(activity, intent, REQUEST_CODE_NEWPAY);
+            activity.startActivityForResult(intent, REQUEST_CODE_NEWPAY);
         } else{
             startDownloadUrl(activity.getContext());
             //Toast.makeText(activity, R.string.no_newpay_application, Toast.LENGTH_SHORT).show();
@@ -122,7 +122,7 @@ public class NewPayApi {
         boolean isIntentSafe = checkNewPay(intent);
         // Start an activity if it's safe
         if (isIntentSafe) {
-            startActivityForResult(activity, intent, REQUEST_CODE_NEWPAY_PAY);
+            activity.startActivityForResult(intent, REQUEST_CODE_NEWPAY_PAY);
         } else{
             startDownloadUrl(activity.getContext());
         }
@@ -136,18 +136,10 @@ public class NewPayApi {
         intent.putExtra(CONTENT, gson.toJson(orders));
         boolean isIntentSafe = checkNewPay(intent);
         if (isIntentSafe) {
-            startActivityForResult(activity, intent, REQUEST_CODE_PUSH_ORDER);
+            activity.startActivityForResult(intent, REQUEST_CODE_PUSH_ORDER);
         } else{
             startDownloadUrl(activity.getContext());
         }
-    }
-
-    private static void startActivityForResult(Activity activity, Intent intent, int requestCode) {
-        activity.startActivityForResult(intent, requestCode);
-    }
-
-    private static void startActivityForResult(Fragment fragment, Intent intent, int requestCode) {
-        fragment.startActivityForResult(intent, requestCode);
     }
 
     private static void startDownloadUrl(final Context context) {
