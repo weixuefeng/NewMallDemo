@@ -3,11 +3,13 @@ package org.newtonproject.newpay.android.sdk;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Application;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
+import android.support.v4.app.Fragment;
 
 import com.google.gson.Gson;
 
@@ -58,7 +60,7 @@ public class NewPayApi {
         boolean isIntentSafe = checkNewPay(intent);
         // Start an activity if it's safe
         if (isIntentSafe) {
-            activity.startActivityForResult(intent, REQUEST_CODE_NEWPAY);
+            startActivityForResult(activity, intent, REQUEST_CODE_NEWPAY);
         } else{
             startDownloadUrl(activity);
             //Toast.makeText(activity, R.string.no_newpay_application, Toast.LENGTH_SHORT).show();
@@ -75,10 +77,9 @@ public class NewPayApi {
         boolean isIntentSafe = checkNewPay(intent);
         // Start an activity if it's safe
         if (isIntentSafe) {
-            activity.startActivityForResult(intent, REQUEST_CODE_NEWPAY_PAY);
+            startActivityForResult(activity, intent, REQUEST_CODE_NEWPAY_PAY);
         } else{
             startDownloadUrl(activity);
-            //Toast.makeText(activity, R.string.no_newpay_application, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -90,14 +91,67 @@ public class NewPayApi {
         intent.putExtra(CONTENT, gson.toJson(orders));
         boolean isIntentSafe = checkNewPay(intent);
         if (isIntentSafe) {
-            activity.startActivityForResult(intent, REQUEST_CODE_PUSH_ORDER);
+            startActivityForResult(activity, intent, REQUEST_CODE_PUSH_ORDER);
         } else{
             startDownloadUrl(activity);
         }
     }
 
-    private static void startDownloadUrl(final Activity activity) {
-        AlertDialog dialog = new AlertDialog.Builder(activity)
+    public static void requestProfileFromNewPay(Fragment activity) {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("newpay://org.newtonproject.newpay.android.authorize"));
+        intent.putExtra(ACTION, Action.REQUEST_PROFILE);
+        intent.putExtra(APPID, appId);
+        intent.putExtra(SIGNATURE, gson.toJson(getSigMessage(privateKey)));
+        boolean isIntentSafe = checkNewPay(intent);
+        // Start an activity if it's safe
+        if (isIntentSafe) {
+            startActivityForResult(activity, intent, REQUEST_CODE_NEWPAY);
+        } else{
+            startDownloadUrl(activity.getContext());
+            //Toast.makeText(activity, R.string.no_newpay_application, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public static void requestPayForThirdApp(Fragment activity, String address, BigInteger account){
+        String unitStr = "NEW";
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("newpay://org.newtonproject.newpay.android.pay"));
+        intent.putExtra("SYMBOL", unitStr);
+        intent.putExtra("ADDRESS", address);
+        intent.putExtra("AMOUNT", account.toString(10));
+        intent.putExtra("REQUEST_PAY_SOURCE", activity.getContext().getPackageName());
+        boolean isIntentSafe = checkNewPay(intent);
+        // Start an activity if it's safe
+        if (isIntentSafe) {
+            startActivityForResult(activity, intent, REQUEST_CODE_NEWPAY_PAY);
+        } else{
+            startDownloadUrl(activity.getContext());
+        }
+    }
+
+    public static void requestPushOrder(Fragment activity, ArrayList<Order> orders) {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("newpay://org.newtonproject.newpay.android.authorize"));
+        intent.putExtra(ACTION, Action.PUSH_ORDER);
+        intent.putExtra(APPID, appId);
+        intent.putExtra(SIGNATURE, gson.toJson(getSigMessage(privateKey)));
+        intent.putExtra(CONTENT, gson.toJson(orders));
+        boolean isIntentSafe = checkNewPay(intent);
+        if (isIntentSafe) {
+            startActivityForResult(activity, intent, REQUEST_CODE_PUSH_ORDER);
+        } else{
+            startDownloadUrl(activity.getContext());
+        }
+    }
+
+    private static void startActivityForResult(Activity activity, Intent intent, int requestCode) {
+        activity.startActivityForResult(intent, requestCode);
+    }
+
+    private static void startActivityForResult(Fragment fragment, Intent intent, int requestCode) {
+        fragment.startActivityForResult(intent, requestCode);
+    }
+
+    private static void startDownloadUrl(final Context context) {
+        AlertDialog dialog = new AlertDialog.Builder(context)
                 .setCancelable(true)
                 .setMessage(R.string.no_newpay_application)
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -111,7 +165,7 @@ public class NewPayApi {
                     public void onClick(DialogInterface dialogInterface, int i) {
                         Uri uri = Uri.parse(RELEASE_SHARE_URL);
                         Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                        activity.startActivity(intent);
+                        context.startActivity(intent);
                         dialogInterface.dismiss();
                     }
                 }).create();
