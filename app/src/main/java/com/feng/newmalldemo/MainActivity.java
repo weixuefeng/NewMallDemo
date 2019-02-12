@@ -21,6 +21,7 @@ import org.newtonproject.newpay.android.sdk.bean.Currency;
 import org.newtonproject.newpay.android.sdk.bean.Order;
 import org.newtonproject.newpay.android.sdk.bean.ProfileInfo;
 import org.newtonproject.newpay.android.sdk.bean.SigMessage;
+import org.newtonproject.newpay.android.sdk.constant.Environment;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -34,6 +35,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private TextView newidTextView;
     private ImageView imageView;
     private String TAG = "Activity";
+
+    TextView dev;
+    TextView beta;
+    TextView testnet;
+    TextView mainnet;
+    TextView evn;
+
 
     private static final int REQUEST_CODE_NEWPAY = 1000;
     private static final String privateKey = "0xbc6162af5677bc108fc227a1b1178aede933d05979cc5c6154078c2eae068dac";
@@ -59,8 +67,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         newidTextView = findViewById(R.id.newidTextView);
         imageView = findViewById(R.id.avatarImageView);
         request20Bt = findViewById(R.id.request20Bt);
+        dev = findViewById(R.id.dev);
+        beta = findViewById(R.id.beta);
+        testnet = findViewById(R.id.testnet);
+        mainnet = findViewById(R.id.mainnet);
+        evn = findViewById(R.id.env);
         profileLinearLayout.setOnClickListener(this);
         request20Bt.setOnClickListener(this);
+        dev.setOnClickListener(this);
+        beta.setOnClickListener(this);
+        mainnet.setOnClickListener(this);
+        testnet.setOnClickListener(this);
         single = findViewById(R.id.pushSingle);
         multiple = findViewById(R.id.pushMultiple);
         single.setOnClickListener(this);
@@ -81,6 +98,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.pushSingle:
                 pushSingle();
+                break;
+            case R.id.dev:
+                evn.setText("Dev");
+                NewPayApi.init(getApplication(), privateKey, "9a674d65c945569a9071b31b07f3bc52", Environment.DEVNET);
+
+                break;
+            case R.id.beta:
+                evn.setText("Beta");
+                NewPayApi.init(getApplication(), privateKey, "9a674d65c945569a9071b31b07f3bc52", Environment.BETANET);
+
+                break;
+            case R.id.testnet:
+                evn.setText("testnet");
+                NewPayApi.init(getApplication(), privateKey, "9a674d65c945569a9071b31b07f3bc52", Environment.TESTNET);
+
+                break;
+            case R.id.mainnet:
+                evn.setText("main");
+                NewPayApi.init(getApplication(), privateKey, "9a674d65c945569a9071b31b07f3bc52", Environment.MAINNET);
                 break;
         }
     }

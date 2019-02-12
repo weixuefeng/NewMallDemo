@@ -2,11 +2,15 @@
 
 # 1.add gradle dependency on your app build.gradle
 ```
-implementation 'org.newtonproject.newpay.android.sdk:NewPaySDK:0.0.10'
+implementation 'org.newtonproject.newpay.android.sdk:NewPaySDK:1.0.0'
 ```
 # 2. init NewPayApi on application
 ```
+// in release environment
 NewPayApi.init(getApplication(), yourPrivateKey, $yourtransaferId);
+
+// in testnet, beta, dev and etc. environment
+NewPayApi.init(getApplication(), yourPrivateKey, $yourtransaferId, Environment.DEVNET);
 ```
 # 3. request profile information
 ```
@@ -58,3 +62,8 @@ if(requestCode == NewPayApi.REQUEST_CODE_NEWPAY && resultCode == RESULT_OK) {
 
 ```
 
+
+
+### Change log
+
+# 1.0.0 add multiple environment init for NewMall.

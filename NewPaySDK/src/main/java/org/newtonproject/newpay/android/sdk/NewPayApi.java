@@ -16,6 +16,8 @@ import com.google.gson.Gson;
 import org.newtonproject.newpay.android.sdk.bean.Action;
 import org.newtonproject.newpay.android.sdk.bean.Order;
 import org.newtonproject.newpay.android.sdk.bean.SigMessage;
+import org.newtonproject.newpay.android.sdk.constant.Constant;
+import org.newtonproject.newpay.android.sdk.constant.Environment;
 import org.web3j.crypto.ECKeyPair;
 import org.web3j.crypto.Sign;
 import org.web3j.utils.Numeric;
@@ -43,8 +45,18 @@ public class NewPayApi {
     private static final String CONTENT = "CONTENT";
     private static final String SIGNATURE = "SIGNATURE";
 
+    private static String SHARE_URL = RELEASE_SHARE_URL;
+    private static String authorize_pay = Constant.MainNet.authorize_pay;
+    private static String authorize_login_place = Constant.MainNet.authorize_login_place;
+
     private NewPayApi() {}
 
+
+    /**
+     * @param context context
+     * @param appKey appkey for third application
+     * @param appid app id which registered in newton api.
+     */
     public static void init(Application context, String appKey, String appid) {
         mApplication = context;
         privateKey = appKey;
@@ -52,8 +64,39 @@ public class NewPayApi {
         gson = new Gson();
     }
 
+    /**
+     * @param context context
+     * @param appKey appkey for third application
+     * @param appid app id which registered in newton api.
+     * @param environment eg: Environment.MAINNET, Environment.TESTNET ...
+     */
+    public static void init(Application context, String appKey, String appid, Environment environment) {
+        mApplication = context;
+        privateKey = appKey;
+        appId = appid;
+        gson = new Gson();
+        switch (environment) {
+            case DEVNET:
+                authorize_pay = Constant.DevNet.authorize_pay;
+                authorize_login_place = Constant.DevNet.authorize_login_place;
+                break;
+            case BETANET:
+                authorize_pay = Constant.BetaNet.authorize_pay;
+                authorize_login_place = Constant.BetaNet.authorize_login_place;
+                break;
+            case TESTNET:
+                authorize_pay = Constant.TestNet.authorize_pay;
+                authorize_login_place = Constant.TestNet.authorize_login_place;
+                break;
+            case MAINNET:
+                authorize_pay = Constant.MainNet.authorize_pay;
+                authorize_login_place = Constant.MainNet.authorize_login_place;
+                break;
+        }
+    }
+
     public static void requestProfileFromNewPay(Activity activity) {
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("newpay://org.newtonproject.newpay.android.authorize"));
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(authorize_login_place));
         intent.putExtra(ACTION, Action.REQUEST_PROFILE);
         intent.putExtra(APPID, appId);
         intent.putExtra(SIGNATURE, gson.toJson(getSigMessage(privateKey)));
@@ -69,7 +112,7 @@ public class NewPayApi {
 
     public static void requestPayForThirdApp(Activity activity, String address, BigInteger account){
         String unitStr = "NEW";
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("newpay://org.newtonproject.newpay.android.pay"));
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(authorize_pay));
         intent.putExtra("SYMBOL", unitStr);
         intent.putExtra("ADDRESS", address);
         intent.putExtra("AMOUNT", account.toString(10));
@@ -84,7 +127,7 @@ public class NewPayApi {
     }
 
     public static void requestPushOrder(Activity activity, ArrayList<Order> orders) {
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("newpay://org.newtonproject.newpay.android.authorize"));
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(authorize_login_place));
         intent.putExtra(ACTION, Action.PUSH_ORDER);
         intent.putExtra(APPID, appId);
         intent.putExtra(SIGNATURE, gson.toJson(getSigMessage(privateKey)));
@@ -98,7 +141,7 @@ public class NewPayApi {
     }
 
     public static void requestProfileFromNewPay(Fragment activity) {
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("newpay://org.newtonproject.newpay.android.authorize"));
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(authorize_login_place));
         intent.putExtra(ACTION, Action.REQUEST_PROFILE);
         intent.putExtra(APPID, appId);
         intent.putExtra(SIGNATURE, gson.toJson(getSigMessage(privateKey)));
@@ -114,7 +157,7 @@ public class NewPayApi {
 
     public static void requestPayForThirdApp(Fragment activity, String address, BigInteger account){
         String unitStr = "NEW";
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("newpay://org.newtonproject.newpay.android.pay"));
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(authorize_pay));
         intent.putExtra("SYMBOL", unitStr);
         intent.putExtra("ADDRESS", address);
         intent.putExtra("AMOUNT", account.toString(10));
@@ -129,7 +172,7 @@ public class NewPayApi {
     }
 
     public static void requestPushOrder(Fragment activity, ArrayList<Order> orders) {
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("newpay://org.newtonproject.newpay.android.authorize"));
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(authorize_login_place));
         intent.putExtra(ACTION, Action.PUSH_ORDER);
         intent.putExtra(APPID, appId);
         intent.putExtra(SIGNATURE, gson.toJson(getSigMessage(privateKey)));
@@ -155,7 +198,7 @@ public class NewPayApi {
                 .setPositiveButton(R.string.download_newpay, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        Uri uri = Uri.parse(RELEASE_SHARE_URL);
+                        Uri uri = Uri.parse(SHARE_URL);
                         Intent intent = new Intent(Intent.ACTION_VIEW, uri);
                         context.startActivity(intent);
                         dialogInterface.dismiss();
